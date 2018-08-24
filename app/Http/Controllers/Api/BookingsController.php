@@ -15,7 +15,7 @@ class BookingsController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::all();
+        $bookings = Booking::all()->toArray();
         return $bookings;
     }
 
@@ -26,7 +26,9 @@ class BookingsController extends Controller
      */
     public function create()
     {
-        //
+        //Todo
+        //Check if faculty is available
+        return 1;
     }
 
     /**

@@ -1,7 +1,6 @@
 $(function() {
   $('#calendar').fullCalendar({
     header: { 
-//      center: 'month,agendaWeek',
         left: 'prev,next today',
         center: 'title',
         right: 'month,agendaWeek,agendaDay'
@@ -15,86 +14,80 @@ $(function() {
     navLinks: true, // can click day/week names to navigate views
     selectable: true,
     selectHelper: true,
-    select: function(start, end) {
-      var title = prompt('Booking Title:');
-      var eventData;
-      if (title) {
-        eventData = {
-          title: title,
-          start: start,
-          end: end
-        };
-        $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
-      }
-      $('#calendar').fullCalendar('unselect');
+    select: function(start, end) {  
+      startDate = moment(new Date(start)).format("MM-DD-YYYY");
+      $('#booingStartDate').val(startDate);
+      $('#createBookingModal').modal('show');
     },
     editable: true,
     eventLimit: true, // allow "more" link when too many events
-    events: [
-      {
-        title: 'All Day Event',
-        start: '2018-08-01'
-      },
-      {
-        title: 'Long Event',
-        start: '2018-08-07',
-        end: '2018-08-10'
-      },
-      {
-        id: 999,
-        title: 'Repeating Event',
-        start: '2018-09-09T16:00:00'
-      },
-      {
-        id: 999,
-        title: 'Repeating Event',
-        start: '2018-09-16T16:00:00'
-      },
-      {
-        title: 'Conference',
-        start: '2018-08-11',
-        end: '2018-08-13'
-      },
-      {
-        title: 'Meeting',
-        start: '2018-08-12T10:30:00',
-        end: '2018-08-12T12:30:00'
-      },
-      {
-        title: 'Lunch',
-        start: '2018-08-12T12:00:00'
-      },
-      {
-        title: 'Meeting',
-        start: '2018-08-12T14:30:00'
-      },
-      {
-        title: 'Happy Hour',
-        start: '2018-08-12T17:30:00'
-      },
-      {
-        title: 'Dinner',
-        start: '2018-09-12T20:00:00'
-      },
-      {
-        title: 'Birthday Party',
-        start: '2018-08-13T07:00:00'
-      },
-      {
-        title: 'Click for Google',
-        url: 'http://google.com/',
-        start: '2018-08-28'
-      }
-    ],
-    eventClick: function(event) {
-      // opens events in a popup window
-        var booking = window.open("", "BookingDetails", "width=200,height=100");
-        booking.document.write("<p>" + event.title + "</p>");
-      return false;
+    events: function(start, end, timezone, callback){
+      $.ajax({
+        url: '/api/bookings',
+        dataType: 'json',
+        data: {
+          start: start.unix(),
+          end: end.unix(),
+        },
+        success: function(response){
+          var events = [];
+
+          $(response).each(function(){
+            events.push({
+              title: $(this).attr('title'),
+              start: $(this).attr('start_time'),
+              end: $(this).attr('end_time'),
+            });
+          });
+          callback(events);
+        }
+      });
+    },
+    eventClick: function(event, jsEvent, view) {
+      startDate = moment(new Date(event.start)).format("MM-DD-YYYY");
+      endDate = moment(new Date(event.end)).format("MM-DD-YYYY");
+        $('#modalTitle').text(event.title);
+        $('#modalBody .start span').text(startDate);
+        $('#modalBody .end span').text(endDate);
+        $('#fullCalModal').modal('show');
     },
 
     loading: function(bool) {
       $('#loading').toggle(bool);
     }
   });
+
+    $('#submitButton').on('click', function(e){
+      e.preventDefault();
+      doSubmit();
+    });
+
+  function doSubmit(){
+    var eventData = {
+          title: $('#bookingName').val(),
+          start: new Date($('#booingStartDate').val()),
+          end: new Date($('#bookingDueDate').val())
+    };
+    $.ajax({
+        url: '/api/bookings/create',
+        data: {
+          title: eventData.title,
+          start_time: eventData.start,
+          end_time: eventData.end
+        },
+        success: function(response){
+          console.log(response);
+          // if ( response == 0 ){
+          //   alert('Invalid Date');
+          //   return false;
+          // } else {
+          //   return true;
+          // }
+        }
+      });
+      $('#createBookingModal form').get(0).reset();
+      $("#createBookingModal").modal('hide');
+      $("#calendar").fullCalendar('renderEvent', eventData, true);
+      $('#calendar').fullCalendar('unselect');
+  }
 });
