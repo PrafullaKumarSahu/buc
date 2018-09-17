@@ -14,21 +14,21 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
     
-     <!-- Scripts -->
-     <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.print.css" media='print' />
     
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
+
 </head>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    {{ config('app.name', 'Book Ur Class') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -82,7 +82,5 @@
     <script src="{{ asset('js/vendors/moment.js') }}" defer></script>
     <script src="{{ asset('js/vendors/fullcalendar.min.js') }}" defer></script>
     <script src="{{ asset('js/script.js') }}" defer></script>
-    
 </body>
-
 </html>
